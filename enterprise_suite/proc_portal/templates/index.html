@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Procurement Portal</title>
+</head>
+<body>
+
+<h2>Procurement - Order Equipment</h2>
+
+<form action="/order" method="post">
+    <label>Name:</label>
+    <input id="proc_employee_name" name="name" type="text"/><br><br>
+
+    <label>Laptop Model:</label>
+    <select id="laptop_model" name="laptop_model">
+        <option value="Windows - Dell XPS">Windows - Dell XPS</option>
+        <option value="Windows - HP Elitebook">Windows - HP Elitebook</option>
+        <option value="Mac - MacBook Air">Mac - MacBook Air</option>
+        <option value="Mac - MacBook Pro">Mac - MacBook Pro</option>
+        <option value="HP - Desktop">HP - Desktop</option>
+    </select><br><br>
+
+    <button id="proc_submit_btn" type="submit">
+        Order Equipment
+    </button>
+</form>
+
+<h3>Orders:</h3>
+<ul>
+    {% for order in orders %}
+        <li>
+            {{ order.name }} - {{ order.laptop_model }} - {{ order.status }}
+        </li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HR Portal</title>
+</head>
+<body>
+    <h2>HR Employee Onboarding</h2>
+
+    <form action="/create" method="post">
+        <label>Name:</label>
+        <input id="employee_name" name="name" type="text"/><br/><br/>
+
+        <label>Role:</label>
+        <input id="employee_role" name="role" type="text"/><br/><br/>
+
+        <button id="submit_btn" type="submit">Create Employee</button>
+    </form>
+
+    <h3>Employees:</h3>
+    <ul>
+        {% for emp in employees %}
+            <li>{{ emp.name }} - {{ emp.role }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

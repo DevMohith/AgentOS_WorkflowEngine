@@ -114,3 +114,19 @@ def format_run_response(run):
         "logs": run.logs,
         "context": run.context
     }
+    
+# runs list view
+@router.get("/")
+def list_runs(db: Session = Depends(get_db)):
+    runs = db.query(models.WorkflowRun).all()
+
+    return [
+        {
+            "run_id": r.id,
+            "workflow_id": r.workflow_id,
+            "status": r.status,
+            "current_node": r.current_node,
+            "context": r.context,
+        }
+        for r in runs
+    ]

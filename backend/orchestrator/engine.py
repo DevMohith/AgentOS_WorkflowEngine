@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from backend.db import models
 from backend.agents.browser_executor import execute_browser_agent
-
+from sqlalchemy.orm.attributes import flag_modified
 
 async def execute_workflow(db, workflow, context=None, existing_run=None):
 
@@ -71,6 +71,9 @@ async def execute_agent_node(node: dict, run: models.WorkflowRun, db: Session):
             execute_browser_agent("it", {
                 "name": run.context["employee_name"]
             })
+            run.context["it_account_id"] = run.context["employee_name"].lower().replace(" ", ".")
+            run.context["it_email"] = f"{run.context['it_account_id']}@agentos.com"
+            flag_modified(run, "context")
             append_log(run, db, "IT completed.")
             
         elif agent_id == "procurement":
@@ -79,6 +82,9 @@ async def execute_agent_node(node: dict, run: models.WorkflowRun, db: Session):
                 "name": run.context["employee_name"],
                 "laptop_model": run.context.get("laptop_model", "Windows - Dell XPS")
             })
+            run.context["id_card_generated"] = True
+            run.context["workspace_allocated"] = "Heidelberg HQ"
+            flag_modified(run, "context")
             append_log(run, db, "Procurement order submitted.")
 
         else:

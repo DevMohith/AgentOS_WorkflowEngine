@@ -23,3 +23,4 @@ class WorkflowRun(Base):
     status = Column(String, default="running")
     current_node = Column(String, nullable=True)
     logs = Column(JSON, default=[])
+    context = Column(JSON, default={})

@@ -3,18 +3,18 @@ from backend.db import models
 from backend.agents.browser_executor import execute_browser_agent
 
 
-async def execute_workflow(db: Session, workflow: models.Workflow, existing_run=None):
+async def execute_workflow(db, workflow, context=None, existing_run=None):
 
     # If resume → reuse existing run
     if existing_run:
         run = existing_run
         run.status = "running"
-        db.commit()
     else:
         run = models.WorkflowRun(
             workflow_id=workflow.id,
             status="running",
-            logs=[]
+            logs=[],
+            context=context or {}
         )
         db.add(run)
         db.commit()
@@ -61,23 +61,23 @@ async def execute_agent_node(node: dict, run: models.WorkflowRun, db: Session):
         if agent_id == "hr":
             append_log(run, db, "Starting HR Agent...")
             execute_browser_agent("hr", {
-                "name": "Mohith",
-                "role": "Software Engineer"
+                "name": run.context["employee_name"],
+                "role": run.context["role"]
             })
             append_log(run, db, "HR completed.")
 
         elif agent_id == "it":
             append_log(run, db, "Starting IT Agent...")
             execute_browser_agent("it", {
-                "name": "Mohith"
+                "name": run.context["employee_name"]
             })
             append_log(run, db, "IT completed.")
             
         elif agent_id == "procurement":
             append_log(run, db, "Starting Procurement Agent...")
             execute_browser_agent("procurement", {
-                "name": "Mohith",
-                "laptop_model": "Mac - MacBook Pro"
+                "name": run.context["employee_name"],
+                "laptop_model": run.context.get("laptop_model", "Windows - Dell XPS")
             })
             append_log(run, db, "Procurement order submitted.")
 

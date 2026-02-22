@@ -64,11 +64,21 @@ def _run_proc_flow(page, payload):
 
     page.goto("http://127.0.0.1:3003")
     page.wait_for_selector("#proc_employee_name")
-
+    
+    page.wait_for_timeout(2000)
     page.fill("#proc_employee_name", payload["name"])
+    
+    page.wait_for_selector("#laptop_model")
 
-    # choose laptop model dynamically
-    page.select_option("#laptop_model", payload["laptop_model"])
+    options = page.locator("#laptop_model option").all_text_contents()
+    print("AVAILABLE OPTIONS:", options)
+    print("REQUESTED OPTION:", payload["laptop_model"])
+    
+    page.wait_for_timeout(2000)
+    page.click("#laptop_model")
+    page.select_option("#laptop_model", value=payload["laptop_model"])
+
+    page.wait_for_timeout(1000)
 
     page.click("#proc_submit_btn")
 

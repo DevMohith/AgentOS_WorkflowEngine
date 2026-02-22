@@ -4,13 +4,13 @@ from backend.db.database import SessionLocal
 from backend.registry import workflow_registry
 from backend.orchestrator.engine import execute_workflow
 from backend.db import models
+from backend.schemas.run_schema import RunInput, RunResponse, ContextUpdate
+from sqlalchemy.orm.attributes import flag_modified
 
 router = APIRouter(prefix="/runs", tags=["Runs"])
 
 
-# ===============================
-# DB Dependency
-# ===============================
+# database dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -19,31 +19,25 @@ def get_db():
         db.close()
 
 
-# ===============================
-# START WORKFLOW
-# ===============================
-@router.post("/{workflow_id}")
-async def run_workflow(workflow_id: str, db: Session = Depends(get_db)):
-    # return {"debug": "This is new code"}
+# start a new workflow run
+@router.post("/{workflow_id}", response_model=RunResponse)
+async def run_workflow(
+    workflow_id: str,
+    input: RunInput,
+    db: Session = Depends(get_db)
+):
+
     workflow = workflow_registry.get_workflow(db, workflow_id)
 
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
 
-    run = await execute_workflow(db, workflow)
+    run = await execute_workflow(db, workflow, input.dict())
 
-    return {
-        "run_id": run.id,
-        "workflow_id": run.workflow_id,
-        "status": run.status,
-        "current_node": run.current_node,
-        "logs": run.logs
-    }
+    return format_run_response(run)
 
 
-# ===============================
-# GET RUN STATUS
-# ===============================
+# get workflow run status and logs
 @router.get("/{run_id}")
 def get_run(run_id: str, db: Session = Depends(get_db)):
 
@@ -63,10 +57,8 @@ def get_run(run_id: str, db: Session = Depends(get_db)):
     }
 
 
-# ===============================
-# RESUME AFTER HUMAN APPROVAL
-# ===============================
-@router.post("/resume/{run_id}")
+# resume workflow run (for human approval nodes)
+@router.post("/resume/{run_id}", response_model=RunResponse)
 async def resume_workflow(run_id: str, db: Session = Depends(get_db)):
 
     run = db.query(models.WorkflowRun).filter(
@@ -76,17 +68,49 @@ async def resume_workflow(run_id: str, db: Session = Depends(get_db)):
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
 
-    if run.status != "waiting_for_approval":
-        raise HTTPException(status_code=400, detail="Run is not waiting for approval")
-
     workflow = workflow_registry.get_workflow(db, run.workflow_id)
 
-    updated_run = await execute_workflow(db, workflow, existing_run=run)
+    updated_run = await execute_workflow(
+        db,
+        workflow,
+        existing_run=run
+    )
 
+    return format_run_response(updated_run)
+
+# laptop procurement context update endpoint
+@router.patch("/{run_id}/context", response_model=RunResponse)
+def update_context(run_id: str, update: ContextUpdate, db: Session = Depends(get_db)):
+
+    run = db.query(models.WorkflowRun).filter(
+        models.WorkflowRun.id == run_id
+    ).first()
+
+    if not run:
+        raise HTTPException(status_code=404, detail="Run not found")
+
+    # Ensure context exists
+    if not run.context:
+        run.context = {}
+
+    if update.laptop_model:
+        run.context["laptop_model"] = update.laptop_model
+
+    # 🔥 THIS LINE IS CRITICAL
+    flag_modified(run, "context")
+
+    db.commit()
+    db.refresh(run)
+
+    return format_run_response(run)
+
+# Utility function to format run response
+def format_run_response(run):
     return {
-        "run_id": updated_run.id,
-        "workflow_id": updated_run.workflow_id,
-        "status": updated_run.status,
-        "current_node": updated_run.current_node,
-        "logs": updated_run.logs
+        "run_id": run.id,
+        "workflow_id": run.workflow_id,
+        "status": run.status,
+        "current_node": run.current_node,
+        "logs": run.logs,
+        "context": run.context
     }

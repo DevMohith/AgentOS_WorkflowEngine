@@ -37,11 +37,13 @@ export default function RunsDashboard({ setRun }: Props) {
           }}
         >
           <p><strong>Employee:</strong> {r.context?.employee_name}</p>
-          <p>Status: {r.status}</p>
-          <p>Current Node: {r.current_node}</p>
+          {/* <p>Role: {r.context?.role}</p> */}
+          <p style={{ color: r.status === "completed" ? "green" : "orange", fontWeight: "bold" }}>Status: {r.status}</p>
+          <p>Agent: {r.current_node}</p>
+          
 
-          <button onClick={() => setRun(r)}>
-            Open
+          <button style={{ backgroundColor: "blue", color: "white", padding: "5px 10px", border: "none", borderRadius: "3px" }} onClick={() => setRun(r)}>
+            Open Details
           </button>
         </div>
       ))}

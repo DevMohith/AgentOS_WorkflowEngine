@@ -4,11 +4,16 @@ from backend.agents.browser_executor import execute_browser_agent
 from sqlalchemy.orm.attributes import flag_modified
 
 async def execute_workflow(db, workflow, context=None, existing_run=None):
-
-    # If resume → reuse existing run
     if existing_run:
         run = existing_run
         run.status = "running"
+        
+        if context and "workflowname" in context:
+            if not run.context:
+                run.context = {}
+            run.context["workflowname"] = context["workflowname"]
+            flag_modified(run, "context")
+            
     else:
         run = models.WorkflowRun(
             workflow_id=workflow.id,
@@ -23,7 +28,6 @@ async def execute_workflow(db, workflow, context=None, existing_run=None):
     definition = workflow.definition
     nodes = definition.get("nodes", [])
 
-    # If resume, skip already executed nodes
     start_index = 0
     if existing_run and run.current_node:
         for i, node in enumerate(nodes):

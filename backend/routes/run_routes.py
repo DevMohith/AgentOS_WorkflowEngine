@@ -31,8 +31,13 @@ async def run_workflow(
 
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
+    
+    print(f"DEBUG: Found Workflow Name: {workflow.name}")
+    
+    initial_context = input.model_dump()
+    initial_context["workflow_name"] = workflow.name
 
-    run = await execute_workflow(db, workflow, input.dict())
+    run = await execute_workflow(db, workflow, initial_context)
 
     return format_run_response(run)
 
@@ -48,13 +53,7 @@ def get_run(run_id: str, db: Session = Depends(get_db)):
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
 
-    return {
-        "run_id": run.id,
-        "workflow_id": run.workflow_id,
-        "status": run.status,
-        "current_node": run.current_node,
-        "logs": run.logs
-    }
+    return format_run_response(run)
 
 
 # resume workflow run (for human approval nodes)
@@ -96,7 +95,7 @@ def update_context(run_id: str, update: ContextUpdate, db: Session = Depends(get
     if update.laptop_model:
         run.context["laptop_model"] = update.laptop_model
 
-    # 🔥 THIS LINE IS CRITICAL
+    # flag mofdified for SQLAlchemy to detect changes in JSON field
     flag_modified(run, "context")
 
     db.commit()
@@ -112,7 +111,7 @@ def format_run_response(run):
         "status": run.status,
         "current_node": run.current_node,
         "logs": run.logs,
-        "context": run.context
+        "context": run.context 
     }
     
 # runs list view

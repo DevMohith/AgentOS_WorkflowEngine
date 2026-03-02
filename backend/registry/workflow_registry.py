@@ -8,6 +8,7 @@ def create_workflow(db: Session, name: str, definition: dict):
     db.commit()
     db.refresh(workflow)
     return workflow
+    
 
 
 def get_workflow(db: Session, workflow_id: str):

@@ -9,6 +9,9 @@ if sys.platform.startswith("win"):
 from fastapi import FastAPI
 from backend.db.database import Base, engine
 from backend.routes import workflow_routes, run_routes
+from backend.db import models
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AgentOS Enterprise Orchestration Engine")
 

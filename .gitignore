@@ -1,1 +1,11 @@
 README.md
+.env
+gcp-vertex-key.json
+__pycache__
+backend/__pycache__
+backend/db/__pycache__
+backend/governance/__pycache__
+backend/registry/__pycache__
+backend/routes/__pycache__
+backend/schemas/__pycache__
+backend/agents/__pycache__

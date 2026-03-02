@@ -4,6 +4,7 @@ export interface Workflow {
 }
 
 export interface RunContext {
+  workflowname?: string;
   employee_name?: string;
   role?: string;
   laptop_model?: string;

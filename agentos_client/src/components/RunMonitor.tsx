@@ -48,7 +48,7 @@ export default function RunMonitor({ run, setRun }: Props) {
             marginTop: "20px",
           }}
         >
-          <h2>✅ Workflow Completed</h2>
+          <h2>✅ Workflow Completed {run.context.workflowname}</h2>
 
           <p><strong>Employee:</strong> {run.context.employee_name}</p>
           <p><strong>Role:</strong> {run.context.role}</p>

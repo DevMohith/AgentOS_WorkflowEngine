@@ -1,23 +1,88 @@
-import RunsDashboard from "./components/RunDashboard";
-import WorkflowCreator from "./components/workflowCreator";
-import RunStarter from "./components/RunStarter";
-import RunMonitor from "./components/RunMonitor";
-import { useState } from "react";
-import type { RunResponse } from "./types";
+import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
+import Home from "./pages/Home";
+import Runs from "./pages/Runs";
+import Logs from "./pages/Logs";
+import WorkflowAgent from "./pages/WorkflowAgent";
+import { useState, useEffect } from "react";
+import type { NavLinkProps } from "react-router-dom";
 
 export default function App() {
-  const [run, setRun] = useState<RunResponse | null>(null);
+  const [darkMode, setDarkMode] = useState(true);
+
+  useEffect(() => {
+    document.body.style.backgroundColor = darkMode ? "#1e1e1e" : "#f5f5f5";
+    document.body.style.color = darkMode ? "#ffffff" : "#000000";
+  }, [darkMode]);
 
   return (
-    <div>
-      <h1>AgentOS Workflow Engine</h1>
+    <Router>
+      <div style={{ minHeight: "100vh" }}>
+        
+        {/* Navbar */}
+        <nav
+          style={{
+            display: "flex",
+            padding: "20px 40px",
+            borderBottom: "1px solid #444",
+            alignItems: "center",
+          }}
+        >
+          <h1
+            style={{
+              fontSize: "25px",
+              letterSpacing: "2px",
+              lineHeight: 1.1,
+              fontWeight: 800,
+              marginRight: "200px",
+              cursor: "pointer",
+            }}
+            onClick={() => window.location.href = "/"}
+          >
+            AgentOS Control Panel
+          </h1>
 
-      <WorkflowCreator />
-      <RunStarter onRunStarted={setRun} />
+          {/* Links container */}
+          <div style={{ display: "flex", gap: "30px" }}>
+            <NavLink to="/" style={linkStyle}>Home</NavLink>
+            <NavLink to="/runs" style={linkStyle}>Runs</NavLink>
+            <NavLink to="/logs" style={linkStyle}>Monitoring</NavLink>
+            <NavLink to="/workflow-agent" style={linkStyle}>Workflow Agent</NavLink>
+          </div>
 
-      <RunsDashboard setRun={setRun} />
+          {/* Dark mode button */}
+          <div style={{ marginLeft: "auto" }}>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              style={{
+                padding: "6px 12px",
+                backgroundColor: darkMode ? "#444" : "#ddd",
+                color: darkMode ? "white" : "black",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
+              }}
+            >
+              {darkMode ? "Light Mode" : "Dark Mode"}
+            </button>
+          </div>
+        </nav>
 
-      <RunMonitor run={run} setRun={setRun} />
-    </div>
+        {/* Pages */}
+        <div style={{ padding: "40px" }}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/runs" element={<Runs />} />
+            <Route path="/logs" element={<Logs />} />
+            <Route path="/workflow-agent" element={<WorkflowAgent />} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
   );
 }
+
+const linkStyle: NavLinkProps["style"] = ({ isActive }) => ({
+  textDecoration: "none",
+  color: isActive ? "#4da6ff" : "inherit",
+  fontWeight: isActive ? "bold" : "normal",
+});

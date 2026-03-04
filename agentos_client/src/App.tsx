@@ -5,6 +5,7 @@ import Logs from "./pages/Logs";
 import WorkflowAgent from "./pages/WorkflowAgent";
 import { useState, useEffect } from "react";
 import type { NavLinkProps } from "react-router-dom";
+import AI from "./pages/AI";
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -47,6 +48,7 @@ export default function App() {
             <NavLink to="/runs" style={linkStyle}>Runs</NavLink>
             <NavLink to="/logs" style={linkStyle}>Monitoring</NavLink>
             <NavLink to="/workflow-agent" style={linkStyle}>Workflow Agent</NavLink>
+            <NavLink to="/ai-workflow" style={linkStyle}>P2P AI</NavLink>
           </div>
 
           {/* Dark mode button */}
@@ -74,6 +76,7 @@ export default function App() {
             <Route path="/runs" element={<Runs />} />
             <Route path="/logs" element={<Logs />} />
             <Route path="/workflow-agent" element={<WorkflowAgent />} />
+            <Route path="/ai-workflow" element={<AI/>} />
           </Routes>
         </div>
       </div>

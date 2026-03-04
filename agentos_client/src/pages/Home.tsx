@@ -3,6 +3,7 @@ import workflowImg from "../assets/workflow.png";
 import logsImg from "../assets/monitoring.png";
 import runsImg from "../assets/Runs.png";
 import metricsImg from "../assets/Analytics.png";
+import AIIMG from "../assets/AI.png"
 
 export default function Home() {
     const navigate = useNavigate();
@@ -25,6 +26,12 @@ export default function Home() {
             description: "View detailed logs of all workflow runs.",
             image: logsImg,
             route: "/logs",
+        },
+        {
+            title: "AgentOS AI",
+            description: "Generate workflow definitions from natural language prompts using AI.",
+            image: AIIMG,
+            route: "/ai-workflow",
         },
         {
             title: "AgentOS Analytics(Coming Soon)",

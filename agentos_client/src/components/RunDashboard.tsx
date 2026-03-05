@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../api/api";
 import type { RunResponse } from "../types";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   setRun: (run: RunResponse) => void;
@@ -8,6 +9,7 @@ interface Props {
 
 export default function RunsDashboard({ setRun }: Props) {
   const [runs, setRuns] = useState<RunResponse[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadRuns = async () => {
@@ -95,7 +97,7 @@ export default function RunsDashboard({ setRun }: Props) {
                 color: "white",
                 cursor: "pointer",
               }}
-              onClick={() => setRun(r)}
+              onClick={() => navigate(`/monitoring/${r.run_id}`)}
             >
               Inspect Run
             </button>

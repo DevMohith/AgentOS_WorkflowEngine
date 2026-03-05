@@ -25,7 +25,7 @@ export default function Home() {
             title: "Monitoring",
             description: "View detailed logs of all workflow runs.",
             image: logsImg,
-            route: "/logs",
+            route: "/monitoring",
         },
         {
             title: "AgentOS AI",

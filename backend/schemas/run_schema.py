@@ -10,11 +10,15 @@ class RunInput(BaseModel):
 class ContextUpdate(BaseModel):
     laptop_model: Optional[str] = None
 
+class LogEntry(BaseModel):
+    timestamp: str
+    message: str
+    level: str
 
 class RunResponse(BaseModel):
     run_id: str
     workflow_id: str
     status: str
     current_node: Optional[str]
-    logs: Optional[List[str]]
+    logs: List[LogEntry]
     context: Optional[dict]

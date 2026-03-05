@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import Home from "./pages/Home";
 import Runs from "./pages/Runs";
-import Logs from "./pages/Logs";
 import WorkflowAgent from "./pages/WorkflowAgent";
 import { useState, useEffect } from "react";
 import type { NavLinkProps } from "react-router-dom";
 import AI from "./pages/AI";
+import Monitoring from "./pages/Monitoring";
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -46,7 +46,7 @@ export default function App() {
           <div style={{ display: "flex", gap: "30px" }}>
             <NavLink to="/" style={linkStyle}>Home</NavLink>
             <NavLink to="/runs" style={linkStyle}>Runs</NavLink>
-            <NavLink to="/logs" style={linkStyle}>Monitoring</NavLink>
+            {/* <NavLink to="/monitoring" style={linkStyle}>Monitoring</NavLink> */}
             <NavLink to="/workflow-agent" style={linkStyle}>Workflow Agent</NavLink>
             <NavLink to="/ai-workflow" style={linkStyle}>P2P AI</NavLink>
           </div>
@@ -74,7 +74,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/runs" element={<Runs />} />
-            <Route path="/logs" element={<Logs />} />
+            <Route path="/monitoring" element={<MonitoringHome />} />
+            <Route path="/monitoring/:runId" element={<Monitoring />} />
             <Route path="/workflow-agent" element={<WorkflowAgent />} />
             <Route path="/ai-workflow" element={<AI/>} />
           </Routes>
@@ -82,6 +83,10 @@ export default function App() {
       </div>
     </Router>
   );
+}
+
+function MonitoringHome() {
+  return <div>Select a run to monitor from dashboard.</div>;
 }
 
 const linkStyle: NavLinkProps["style"] = ({ isActive }) => ({

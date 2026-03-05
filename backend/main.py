@@ -4,18 +4,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    
-    
+
 from fastapi import FastAPI
 from backend.db.database import Base, engine
 from backend.routes import workflow_routes, run_routes
+from backend.routes.websocket_routes import router as websocket_router
 from backend.db import models
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="AgentOS Enterprise Orchestration Engine")
 
-# cors
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -27,8 +27,10 @@ app.add_middleware(
 # Create DB tables
 Base.metadata.create_all(bind=engine)
 
+# Register routes
 app.include_router(workflow_routes.router)
 app.include_router(run_routes.router)
+app.include_router(websocket_router)
 
 
 @app.get("/")

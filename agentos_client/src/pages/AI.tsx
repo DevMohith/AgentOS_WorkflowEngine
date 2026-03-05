@@ -152,6 +152,8 @@ export default function AIWorkflowGenerator() {
               ))}
             </div>
           )}
+
+          <p>Generative Model: gemini-2.0-flash-001</p>
         </div>
 
         {/* RIGHT PANEL */}
